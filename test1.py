@@ -192,7 +192,7 @@ net_fc = nn.Sequential(
 # %%
 
 
-def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
+def train_model(model, criterion, optimizer, scheduler, num_epochs=35):
     since = time.time()
 
     best_model_wts = copy.deepcopy(model.state_dict())
@@ -269,8 +269,8 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
 Changing the fully connected layer to SpinalNet
 '''
 
-model_ft.fc = nn.Linear(num_ftrs, 200)    # I use ResNet101
-# model_ft.fc = SpinalNet()
+# model_ft.fc = nn.Linear(num_ftrs, 200)    # I use ResNet101
+model_ft.fc = SpinalNet()
 
 model_ft = model_ft.to(device)
 
@@ -283,7 +283,7 @@ optimizer_ft = optim.SGD(model_ft.parameters(), lr=0.001, momentum=0.9)
 exp_lr_scheduler = lr_scheduler.StepLR(optimizer_ft, step_size=7, gamma=0.1)    # step_size=7, gamma=0.1
 
 # train model
-model_ft = train_model(model_ft, criterion, optimizer_ft, exp_lr_scheduler, num_epochs=25)
+model_ft = train_model(model_ft, criterion, optimizer_ft, exp_lr_scheduler, num_epochs=35)
 torch.save(model_ft.state_dict(), 'weight.pth')
 
 # test model
@@ -301,7 +301,8 @@ with open('submission.csv', 'w', newline='') as csvfile:
         _, preds = torch.max(outputs, 1)
         for i in range(len(preds)):
             pred = preds[i]
-            csv_writer.writerow([filenames[i], class_names[pred]])
+            name = os.path.splitext(filenames[i])[0]
+            csv_writer.writerow([name, class_names[pred]])
     
         torch.cuda.empty_cache()
             
